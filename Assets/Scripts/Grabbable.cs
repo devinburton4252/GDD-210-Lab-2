@@ -11,6 +11,7 @@ public enum GrabbableType
 /// (e.g. the Bread and Apple prefabs). Requires a Rigidbody + Collider.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
 public class Grabbable : MonoBehaviour
 {
     public GrabbableType Type;
@@ -18,13 +19,20 @@ public class Grabbable : MonoBehaviour
     [Tooltip("How far above the Tray this object hovers while held.")]
     public float HoverHeight = 0.5f;
 
+    [Header("Sound")]
+    public AudioClip PickupSound;
+    public AudioClip ThrowSound;
+
     private Rigidbody rb;
+    private AudioSource audioSource;
     private Transform originalParent;
     private Vector3 originalWorldScale;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
         originalWorldScale = transform.lossyScale; // the object's real, visual size
     }
 
@@ -47,6 +55,11 @@ public class Grabbable : MonoBehaviour
         rb.position = transform.position;
         rb.rotation = transform.rotation;
         Physics.SyncTransforms();
+
+        if (PickupSound != null)
+        {
+            audioSource.PlayOneShot(PickupSound);
+        }
     }
 
     /// <summary>
@@ -78,6 +91,11 @@ public class Grabbable : MonoBehaviour
         // Velocity can only be set once the body is no longer kinematic.
         rb.linearVelocity = throwVelocity ?? Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+
+        if (ThrowSound != null)
+        {
+            audioSource.PlayOneShot(ThrowSound);
+        }
     }
 
     /// <summary>
