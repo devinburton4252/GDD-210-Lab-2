@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1749512718234698492}
   - component: {fileID: 398969809995536613}
   - component: {fileID: 4220712045134295424}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bread
   m_TagString: Untagged
   m_Icon: {fileID: 0}

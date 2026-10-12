@@ -1,8 +1,36 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(AudioSource))]
 public class Button : MonoBehaviour
 {
+    [Header("Sound")]
+    [Tooltip("Played instead of anything else when the player clicks this while it's locked.")]
+    public AudioClip LockedSound;
+    [Tooltip("The button's own click, played every time it's successfully pressed (locked or already-moving doesn't count).")]
+    public AudioClip ClickSound;
+    [Tooltip("Played whenever the Linked Object actually starts moving, e.g. a shutter/gate sound.")]
+    public AudioClip GateSound;
+
+    private AudioSource audioSource;
+
+    [Header("Events (optional, in addition to Linked Object above)")]
+    [Tooltip("Fired when this button toggles into the pressed state.")]
+    public UnityEvent OnPressed;
+    [Tooltip("Fired when this button toggles back into the unpressed state.")]
+    public UnityEvent OnUnpressed;
+
+    [Header("Locking")]
+    [Tooltip("If true, this button ignores Press() until it's unlocked — e.g. by a TriggerZone or PressurePlate elsewhere in the level.")]
+    public bool StartLocked;
+
+    [Tooltip("How many separate ReportUnlockCondition() calls are needed before this actually unlocks. Use 1 for a single gate, or one-per-monster if several must be fed first. Leave at 1 and just call Unlock() directly if you don't need counting.")]
+    public int RequiredUnlockSignals = 1;
+
+    private bool isLocked;
+    private int unlockSignalsReceived;
+
     [Header("Visuals")]
     public Renderer ButtonRenderer;
     public Material UnpressedMaterial; // red
@@ -31,6 +59,11 @@ public class Button : MonoBehaviour
 
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+
+        isLocked = StartLocked;
+
         if (ButtonCap == null) ButtonCap = transform;
         capRestLocalPos = ButtonCap.localPosition;
 
@@ -47,10 +80,51 @@ public class Button : MonoBehaviour
     /// Toggles pressed state, swaps material, plays the cap punch animation,
     /// and moves the Linked Object to/from its offset position.
     /// </summary>
+    /// <summary>
+    /// Call from a TriggerZone's OnZoneComplete, a PressurePlate's OnActivated,
+    /// or anything else that should gate this button (e.g. "feed the monster
+    /// in Room 1 before Room 2's button will do anything"). Immediately
+    /// unlocks — use ReportUnlockCondition instead if several separate things
+    /// all need to happen first.
+    /// </summary>
+    public void Lock() => isLocked = true;
+    public void Unlock() => isLocked = false;
+
+    /// <summary>
+    /// Call this once per separate condition (e.g. once per monster's
+    /// OnZoneComplete). Only actually unlocks once it's been called
+    /// RequiredUnlockSignals times total.
+    /// </summary>
+    public void ReportUnlockCondition()
+    {
+        unlockSignalsReceived++;
+        if (unlockSignalsReceived >= RequiredUnlockSignals)
+        {
+            Unlock();
+        }
+    }
+
     public void Press()
     {
+        if (isLocked)
+        {
+            if (LockedSound != null)
+            {
+                audioSource.PlayOneShot(LockedSound);
+            }
+            return;
+        }
+
         isPressed = !isPressed;
         UpdateVisual();
+
+        if (ClickSound != null)
+        {
+            audioSource.PlayOneShot(ClickSound);
+        }
+
+        if (isPressed) OnPressed?.Invoke();
+        else OnUnpressed?.Invoke();
 
         if (capRoutine != null) StopCoroutine(capRoutine);
         capRoutine = StartCoroutine(PunchCap());
@@ -60,6 +134,11 @@ public class Button : MonoBehaviour
             if (linkedRoutine != null) StopCoroutine(linkedRoutine);
             Vector3 target = isPressed ? linkedRestLocalPos + LinkedObjectOffset : linkedRestLocalPos;
             linkedRoutine = StartCoroutine(MoveOverTime(LinkedObject, LinkedObject.localPosition, target, LinkedObjectMoveDuration));
+
+            if (GateSound != null)
+            {
+                audioSource.PlayOneShot(GateSound);
+            }
         }
     }
 

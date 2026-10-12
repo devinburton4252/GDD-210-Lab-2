@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3393639855759057539}
   - component: {fileID: 8292351017302375610}
   - component: {fileID: 4357936237789525086}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Apple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ Rigidbody:
   m_GameObject: {fileID: 6029550310585164168}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 1.3
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}

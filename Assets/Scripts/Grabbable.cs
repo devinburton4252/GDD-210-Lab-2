@@ -34,6 +34,10 @@ public class Grabbable : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
         originalWorldScale = transform.lossyScale; // the object's real, visual size
+
+        // Prevents tunneling through thin colliders (like a pressure plate)
+        // when this object is moving fast, e.g. right after being thrown.
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
     /// <summary>

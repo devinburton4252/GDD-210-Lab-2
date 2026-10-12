@@ -25,6 +25,7 @@ public class MovePlayer2 : MonoBehaviour
     private Vector3 startPosition;
     private bool canDoubleJump;
     private Grabbable heldObject;
+    private Transform currentPlatform;
 
     private void Start()
     {
@@ -157,6 +158,19 @@ public class MovePlayer2 : MonoBehaviour
 
         heldObject.Release(cameraTransform.forward * ShootSpeed);
         heldObject = null;
+    }
+
+    /// <summary>
+    /// Called by a PlatformRider trigger when the player steps onto (pass the
+    /// platform's transform) or off (pass null) a MovingPlatform, so the
+    /// player rides along with it instead of sliding or lagging behind.
+    /// </summary>
+    public void SetPlatform(Transform platform)
+    {
+        if (currentPlatform == platform) return;
+
+        currentPlatform = platform;
+        transform.SetParent(platform, true); // true: keep current world position/rotation
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
