@@ -1384,7 +1384,7 @@
         "tex2d"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -5462,7 +5462,7 @@
     ],
     "synonyms": [],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -5548,7 +5548,7 @@
     "m_Title": "Ripple Effects",
     "m_Position": {
         "x": -4905.99951171875,
-        "y": 257.0
+        "y": 256.9999694824219
     }
 }
 
@@ -5946,7 +5946,7 @@
     "m_Title": "Ripple Effects",
     "m_Position": {
         "x": -5464.99951171875,
-        "y": 839.9998779296875
+        "y": 840.0
     }
 }
 
@@ -6509,7 +6509,7 @@
         "tex2d"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
